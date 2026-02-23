@@ -1,3 +1,5 @@
+This is an explanation of how app.py and index.html are wired together.
+
 Here is exactly how the HTML knows where to shoot that data, and how Python knows to catch it.
 1. The HTML "Invisible" Rule
 Normally, when you build an HTML form, you have to explicitly tell it where to send the data using an attribute called action. It looks like this:
