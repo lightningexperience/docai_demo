@@ -18,9 +18,11 @@ PASSWORD = os.getenv("SF_PASSWORD", "")
 CONFIG_API_NAME = os.getenv("CONFIG_API_NAME", "customercall_transcript_schema")
 ML_MODEL = os.getenv("ML_MODEL", "llmgateway__OpenAIGPT4Omni_08_06")
 
+# Updated to look for all three fields! (And defaults are set to use spaces)
 FIELD_API = {
-    "first": os.getenv("FIELD_FIRST", "First_Name"),
-    "last": os.getenv("FIELD_LAST", "Last_Name")
+    "first": os.getenv("FIELD_FIRST", "First Name"),
+    "last": os.getenv("FIELD_LAST", "Last Name"),
+    "experience": os.getenv("FIELD_EXPERIENCE", "Professional Experience")
 }
 
 # -------- Helpers --------
@@ -63,7 +65,8 @@ def _has_nonempty_inner(body: dict) -> bool:
 def build_min_schema() -> str:
     props = {
         FIELD_API["first"]: {"type": "string"},
-        FIELD_API["last"]: {"type": "string"}
+        FIELD_API["last"]: {"type": "string"},
+        FIELD_API["experience"]: {"type": "string"}
     }
     schema = {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -129,7 +132,6 @@ def index():
                 error_message = "No file selected."
             else:
                 try:
-                    # Convert file to base64 directly from memory
                     file_bytes = file.read()
                     file_b64 = base64.b64encode(file_bytes).decode("utf-8")
 
@@ -137,10 +139,12 @@ def index():
                     body = extract_with_config(instance_url, token, file_b64)
                     flat = parse_extracted_values(body)
 
+                    # Added the experience mapping here
                     extracted_data = {
                         "first_name": flat.get(FIELD_API["first"].lower(), "Not Found"),
                         "last_name": flat.get(FIELD_API["last"].lower(), "Not Found"),
-                        "raw_data": str(flat) # X-Ray Vision Debug Data
+                        "experience": flat.get(FIELD_API["experience"].lower(), "Not Found"),
+                        "raw_data": str(flat)
                     }
                 except Exception as e:
                     error_message = str(e)
