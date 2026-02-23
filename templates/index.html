@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document AI Extractor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; max-width: 600px; }
+        .box { border: 1px solid #ccc; padding: 20px; border-radius: 5px; margin-top: 20px;}
+        .error { color: red; font-weight: bold; }
+        .result { font-size: 1.2em; color: #2c3e50; }
+    </style>
+</head>
+<body>
+    <h2>Upload Document for AI Extraction</h2>
+    
+    <div class="box">
+        <form method="POST" enctype="multipart/form-data">
+            <label for="document">Select a PDF Document:</label><br><br>
+            <input type="file" name="document" id="document" accept="application/pdf" required><br><br>
+            <button type="submit">Upload and Extract</button>
+        </form>
+    </div>
+
+    {% if error %}
+        <div class="box error">
+            <p>Error: {{ error }}</p>
+        </div>
+    {% endif %}
+
+    {% if data %}
+        <div class="box result">
+            <h3>Extraction Results:</h3>
+            <p><strong>First Name:</strong> {{ data.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ data.last_name }}</p>
+        </div>
+    {% endif %}
+</body>
+</html>
