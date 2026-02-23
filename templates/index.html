@@ -7,6 +7,7 @@
         .box { border: 1px solid #ccc; padding: 20px; border-radius: 5px; margin-top: 20px;}
         .error { color: red; font-weight: bold; }
         .result { font-size: 1.2em; color: #2c3e50; }
+        .debug-data { font-size: 0.85em; color: #7f8c8d; background-color: #f9f9f9; padding: 10px; border-radius: 4px; margin-top: 15px; word-wrap: break-word;}
     </style>
 </head>
 <body>
@@ -31,6 +32,11 @@
             <h3>Extraction Results:</h3>
             <p><strong>First Name:</strong> {{ data.first_name }}</p>
             <p><strong>Last Name:</strong> {{ data.last_name }}</p>
+            
+            <div class="debug-data">
+                <p><strong>Raw AI Output (Debug):</strong></p>
+                <p>{{ data.raw_data }}</p>
+            </div>
         </div>
     {% endif %}
 </body>
