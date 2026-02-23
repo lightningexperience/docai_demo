@@ -19,8 +19,8 @@ CONFIG_API_NAME = os.getenv("CONFIG_API_NAME", "customercall_transcript_schema")
 ML_MODEL = os.getenv("ML_MODEL", "llmgateway__OpenAIGPT4Omni_08_06")
 
 FIELD_API = {
-    "first": os.getenv("FIELD_FIRST", "customer_first_name"),
-    "last": os.getenv("FIELD_LAST", "customer_last_name")
+    "first": os.getenv("FIELD_FIRST", "First_Name"),
+    "last": os.getenv("FIELD_LAST", "Last_Name")
 }
 
 # -------- Helpers --------
@@ -139,7 +139,8 @@ def index():
 
                     extracted_data = {
                         "first_name": flat.get(FIELD_API["first"].lower(), "Not Found"),
-                        "last_name": flat.get(FIELD_API["last"].lower(), "Not Found")
+                        "last_name": flat.get(FIELD_API["last"].lower(), "Not Found"),
+                        "raw_data": str(flat) # X-Ray Vision Debug Data
                     }
                 except Exception as e:
                     error_message = str(e)
