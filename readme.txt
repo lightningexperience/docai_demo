@@ -1,3 +1,6 @@
+<h1> App Structure</h1>
+I created this readme to explain how the repo contents are wired toegther. It's probably already obvious for expert Python developers, but for those new to Python, the following may help in easier navigation.
+
 This is an explanation of how app.py and index.html are wired together.
 
 Here is exactly how the HTML knows where to shoot that data, and how Python knows to catch it.
