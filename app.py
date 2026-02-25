@@ -18,7 +18,7 @@ PASSWORD = os.getenv("SF_PASSWORD", "")
 CONFIG_API_NAME = os.getenv("CONFIG_API_NAME", "customercall_transcript_schema")
 ML_MODEL = os.getenv("ML_MODEL", "llmgateway__OpenAIGPT4Omni_08_06")
 
-# Updated to look for all three fields! (And defaults are set to use spaces)
+# Field configuration defaults
 FIELD_API = {
     "first": os.getenv("FIELD_FIRST", "First Name"),
     "last": os.getenv("FIELD_LAST", "Last Name"),
@@ -77,23 +77,24 @@ def build_min_schema() -> str:
     }
     return json.dumps(schema)
 
-def extract_with_config(instance_url: str, token: str, file_b64: str) -> dict:
+# Updated to accept mime_type dynamically
+def extract_with_config(instance_url: str, token: str, file_b64: str, mime_type: str) -> dict:
     url = f"{ssot_base(instance_url)}/actions/extract-data"
     
-    # Step 1: Try with config
+    # Step 1: Try with config using dynamic mimeType
     payload1 = {
         "idpConfigurationIdOrName": CONFIG_API_NAME,
-        "files": [{"data": file_b64, "mimeType": "application/pdf"}]
+        "files": [{"data": file_b64, "mimeType": mime_type}]
     }
     r1 = requests.post(url, headers=headers_json(token), data=json.dumps(payload1))
     if r1.status_code in (200, 201) and _has_nonempty_inner(r1.json()):
         return r1.json()
 
-    # Step 2: Fallback to schema
+    # Step 2: Fallback to schema using dynamic mimeType
     payload2 = {
         "schemaConfig": build_min_schema(),
         "mlModel": ML_MODEL,
-        "files": [{"data": file_b64, "mimeType": "application/pdf"}]
+        "files": [{"data": file_b64, "mimeType": mime_type}]
     }
     r2 = requests.post(url, headers=headers_json(token), data=json.dumps(payload2))
     if r2.status_code in (200, 201) and _has_nonempty_inner(r2.json()):
@@ -134,12 +135,16 @@ def index():
                 try:
                     file_bytes = file.read()
                     file_b64 = base64.b64encode(file_bytes).decode("utf-8")
+                    
+                    # Capture the dynamic file type (e.g., image/jpeg or application/pdf)
+                    mime_type = file.mimetype
 
                     token, instance_url = oauth_login()
-                    body = extract_with_config(instance_url, token, file_b64)
+                    
+                    # Pass the dynamic mime_type to Salesforce
+                    body = extract_with_config(instance_url, token, file_b64, mime_type)
                     flat = parse_extracted_values(body)
 
-                    # Added the experience mapping here
                     extracted_data = {
                         "first_name": flat.get(FIELD_API["first"].lower(), "Not Found"),
                         "last_name": flat.get(FIELD_API["last"].lower(), "Not Found"),
